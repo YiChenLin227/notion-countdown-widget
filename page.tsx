@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,16 +29,36 @@ export default function CountdownWidget() {
   const [endDate, setEndDate] = useState("");
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 });
 
+  // load from localStorage
+  useEffect(() => {
+    const storedTitle = localStorage.getItem("countdown-title");
+    const storedStart = localStorage.getItem("countdown-start");
+    const storedEnd = localStorage.getItem("countdown-end");
+    if (storedTitle) setTitle(storedTitle);
+    if (storedStart) setStartDate(storedStart);
+    if (storedEnd) setEndDate(storedEnd);
+  }, []);
+
+  // store to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("countdown-title", title);
+  }, [title]);
+
+  useEffect(() => {
+    localStorage.setItem("countdown-start", startDate);
+  }, [startDate]);
+
+  useEffect(() => {
+    localStorage.setItem("countdown-end", endDate);
+  }, [endDate]);
+
   useEffect(() => {
     if (!endDate || !startDate) return;
     const target = new Date(endDate);
-    const start = new Date(startDate);
-
     const updateCountdown = () => {
       const newCountdown = calculateCountdown(target);
       setCountdown(newCountdown);
     };
-
     updateCountdown();
     const id = setInterval(updateCountdown, 1000);
     return () => clearInterval(id);
